@@ -1,0 +1,5 @@
+img.img-thumbnail {
+    height: 100px;
+    min-width: 100px !important;/*important: overrides the bootstrap style*/
+    margin-bottom: 2px;
+}
