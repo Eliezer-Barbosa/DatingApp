@@ -37,10 +37,15 @@ namespace DatingApp.API
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite
             (Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddCors(options =>{options.AddPolicy("AllowAll", builder => { 
-                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();});
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            .AddJsonOptions(opt => {
+                opt.SerializerSettings.ReferenceLoopHandling = 
+                    Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            // services.AddCors(options =>{options.AddPolicy("AllowAll", builder => { 
+            //     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();});
+            // });
+            services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -56,7 +61,6 @@ namespace DatingApp.API
                         ValidateAudience = false
                     };
                 });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,8 +89,9 @@ namespace DatingApp.API
             }
 
              // app.UseHttpsRedirection();
-            //app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            app.UseCors("AllowAll");
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+           // app.UseCors("AllowAll");
+            //app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             app.UseAuthentication();
             app.UseMvc();
         }
